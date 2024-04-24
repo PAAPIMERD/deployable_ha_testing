@@ -188,13 +188,13 @@ def green_obs(stock):
 
 
 
-def day_start():
+"""def day_start():
     while True:
         current_time = datetime.datetime.now().time()
         if current_time.hour == 9 and current_time.minute == 25:
             init_ha(stock)
             hieken_ashi(stock)
-            main(stock)
+            main(stock)"""
 
 
 
