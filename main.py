@@ -197,5 +197,6 @@ def green_obs(stock):
             main(stock)"""
 
 
-
-day_start()
+init_ha(stock)
+hieken_ashi(stock)
+main(stock
