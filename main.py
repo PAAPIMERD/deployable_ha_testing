@@ -5,7 +5,7 @@ view = "green"
 #amt = int(input("ENTER the amount with which you are gonna trade: "))
 from kite_trade import *
 import time
-from datetime import datetime
+import datetime 
 kite = KiteApp(enc_t)
 
 
@@ -130,7 +130,7 @@ def sell_trade(stock):
                          trailing_stoploss=None,
                          tag="TradeViaPython")
   first = True
-  
+
 
 def main(stock):
 
@@ -191,7 +191,7 @@ def green_obs(stock):
 def day_start():
     while True:
         current_time = datetime.datetime.now().time()
-        if current_time.hour == 9 and current_time.minute == 15:
+        if current_time.hour == 9 and current_time.minute == 25:
             init_ha(stock)
             hieken_ashi(stock)
             main(stock)
