@@ -1,12 +1,42 @@
 enc_t = "2MjMfpL06n5Hb0Ur507BfBwZhMOGvm+yP8CkwSMl5269t77/f2/ceOLSuB6TQVo4V/OG+Zc5kRxHxemZS9DEqoW9/LBwoLW3pOT5/sImFFg48equgCGdHA=="
 stock = "BANKINDIA"
 view = "green"
+c_email = "avinash9588@gmail.com"
 #amt = int(input("ENTER the amount with which you are gonna trade: "))
 from kite_trade import *
 import time
 import datetime
 kite = KiteApp(enc_t)
 wallet = 0
+
+
+
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
+def send_email(sender_email, sender_password, receiver_email, subject, body):
+    # Setup the MIME
+    message = MIMEMultipart()
+    message['From'] = sender_email
+    message['To'] = receiver_email
+    message['Subject'] = subject
+
+    # Add message body
+    message.attach(MIMEText(body, 'plain'))
+
+    # Connect to the server
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.starttls()
+
+    # Login to your gmail account
+    server.login(sender_email, sender_password)
+
+    # Send Email
+    server.sendmail(sender_email, receiver_email, message.as_string())
+
+    # Quit the server
+    server.quit()
 
 
 
@@ -94,11 +124,29 @@ def hieken_ashi(stock):
 
 
 def buy_trade(stock):
+  global wallet
   global first
+  print("now a buy order mail will be sent")
+  print("api and network compnonents and hardware are working fine")
+  sender_email = "avinashaws9588@gmail.com"
+  sender_password = "mcst rhrz krcr baoe"
+  receiver_email = c_email
+  subject = "Trade Execution Mail"
+  body = "This is To inform you that we have just placed a BUY trade on your behalf with the wallet condition is "+str(wallet)
+  send_email(sender_email, sender_password, receiver_email, subject, body)
   first = True
 
 def sell_trade(stock):
   global first
+  global wallet
+  print("now a sell order mail will be sent")
+  print("api and network compnonents and hardware are working fine")
+  sender_email = "avinashaws9588@gmail.com"
+  sender_password = "mcst rhrz krcr baoe"
+  receiver_email = c_email
+  subject = "Trade Execution Mail"
+  body = "This is To inform you that we have just placed a SELL trade on your behalf with the wallet condition is "+str(wallet)
+  send_email(sender_email, sender_password, receiver_email, subject, body)
   first = True
 
 
@@ -107,7 +155,7 @@ def main(stock):
   cuurent_trend = hieken_ashi(stock)
   global place_ordertime
   global first
-  global wallet 
+  global wallet
   while True and (place_ordertime - time.time() > 1200 or first == False):
     now = time.time
     if nature[-1] != nature[-2] and nature[-1] == view:
@@ -115,17 +163,20 @@ def main(stock):
       if nature[-1] == "green" and (place_ordertime -now > 1200 or first == False) :
         print("buy signal generated",price_fetcher(stock))
         print("put a buy order")
-        buy_trade(stock)
+        
         wallet -= price_fetcher(stock)
+        buy_trade(stock)
 
         place_ordertime = time.time()
         red_obs(stock)
+        break
       if nature[-1] == "red" and (place_ordertime -now > 1200 or first == False):
         print("short order generated",price_fetcher(stock))
         print("short sell order triggered")
         sell_trade(stock)
         place_ordertime= time.time()
         green_obs(stock)
+        break
     cuurent_trend = hieken_ashi(stock)
 
 
@@ -140,10 +191,11 @@ def red_obs(stock):
     if trend == "red":
 
       print("buy sqaured off",price_fetcher(stock))
-      sell_trade(stock)
+      
       wallet += price_fetcher(stock)
+      sell_trade(stock)
       print("your current pnl after the first trade is ",wallet)
-      main(stock)
+      return main(stock)
 
     trend = hieken_ashi(stock)
 
@@ -157,7 +209,7 @@ def green_obs(stock):
 
       print("Short sell sqaured off",price_fetcher(stock))
       buy_trade(stock)
-      main(stock)
+      return main(stock)
 
     trend = hieken_ashi(stock)
 
