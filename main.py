@@ -1,12 +1,12 @@
-
-enc_t = "gGfJ8B1AwyFLKI8yq/gLtIJWLRQT16ylIAanl+1PmuxHAXHcvI2YWfnMywKWRCJnZpZmkx7AhOMLlSiohyTKtj5zxgDeOF9LednyVhHPy0qU9XG4LLL65w=="
-stock = "TATASTEEL"
+enc_t = "2MjMfpL06n5Hb0Ur507BfBwZhMOGvm+yP8CkwSMl5269t77/f2/ceOLSuB6TQVo4V/OG+Zc5kRxHxemZS9DEqoW9/LBwoLW3pOT5/sImFFg48equgCGdHA=="
+stock = "BANKINDIA"
 view = "green"
 #amt = int(input("ENTER the amount with which you are gonna trade: "))
 from kite_trade import *
 import time
-import datetime 
+import datetime
 kite = KiteApp(enc_t)
+wallet = 0
 
 
 
@@ -95,49 +95,20 @@ def hieken_ashi(stock):
 
 def buy_trade(stock):
   global first
-  order = kite.place_order(variety=kite.VARIETY_REGULAR,
-                         exchange=kite.EXCHANGE_NSE,
-                         tradingsymbol=stock,
-                         transaction_type=kite.TRANSACTION_TYPE_BUY,
-                         quantity=1,
-                         product=kite.PRODUCT_MIS,
-                         order_type=kite.ORDER_TYPE_MARKET,
-                         price=None,
-                         validity=None,
-                         disclosed_quantity=None,
-                         trigger_price=None,
-                         squareoff=None,
-                         stoploss=None,
-                         trailing_stoploss=None,
-                         tag="TradeViaPython")
   first = True
 
 def sell_trade(stock):
   global first
-  order = kite.place_order(variety=kite.VARIETY_REGULAR,
-                         exchange=kite.EXCHANGE_NSE,
-                         tradingsymbol=stock,
-                         transaction_type=kite.TRANSACTION_TYPE_SELL,
-                         quantity=1,
-                         product=kite.PRODUCT_MIS,
-                         order_type=kite.ORDER_TYPE_MARKET,
-                         price=None,
-                         validity=None,
-                         disclosed_quantity=None,
-                         trigger_price=None,
-                         squareoff=None,
-                         stoploss=None,
-                         trailing_stoploss=None,
-                         tag="TradeViaPython")
   first = True
 
 
 def main(stock):
-
+  now = time.time()
   cuurent_trend = hieken_ashi(stock)
   global place_ordertime
   global first
-  while True and (place_ordertime -now > 1200 or first == False):
+  global wallet 
+  while True and (place_ordertime - time.time() > 1200 or first == False):
     now = time.time
     if nature[-1] != nature[-2] and nature[-1] == view:
       now = time.time()
@@ -145,6 +116,8 @@ def main(stock):
         print("buy signal generated",price_fetcher(stock))
         print("put a buy order")
         buy_trade(stock)
+        wallet -= price_fetcher(stock)
+
         place_ordertime = time.time()
         red_obs(stock)
       if nature[-1] == "red" and (place_ordertime -now > 1200 or first == False):
@@ -161,12 +134,15 @@ def main(stock):
 
 def red_obs(stock):
   global first
+  global wallet
   trend = hieken_ashi(stock)
   while True:
     if trend == "red":
 
       print("buy sqaured off",price_fetcher(stock))
       sell_trade(stock)
+      wallet += price_fetcher(stock)
+      print("your current pnl after the first trade is ",wallet)
       main(stock)
 
     trend = hieken_ashi(stock)
@@ -190,6 +166,23 @@ def green_obs(stock):
 
 
 
+
+
+
+'''def execute_functions_at_915(stock):
+    while True:
+        now = datetime.datetime.now()
+        curr_hour = now.hour + 5
+        curr_minute = now.hour + 30
+        if curr_hour == 9 and curr_minute == 15:
+            init_ha(stock)
+            hieken_ashi(stock)
+            main(stock)
+            break  # Exit loop after executing functions
+        time.sleep(1)  # Check every minute'''
+
+
+#execute_functions_at_915(stock)
 
 init_ha(stock)
 hieken_ashi(stock)
